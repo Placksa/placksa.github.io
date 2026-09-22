@@ -118,7 +118,7 @@
           C.svg(C.ICON.arrow, { size: 17, stroke: '#fff', width: 2.4 }) + '</a>' +
         support +
       '</div>' +
-      '<div class="runs-on"><span style="color:inherit">Runs on</span>' + runs + '</div>' +
+      '<div class="runs-on"><span style="color:inherit">Supports</span>' + runs + '</div>' +
     '</section>';
   }
 

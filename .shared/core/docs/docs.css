@@ -443,7 +443,7 @@ a:hover { color: var(--accent-pale); text-decoration: underline; }
 /* Below the rail's breakpoint the same headings become a collapsible. */
 .toc-mobile {
   display: none;
-  margin-bottom: 22px;
+  margin: 22px 0;
   border: 1px solid var(--line);
   border-radius: 10px;
   background: var(--raised-2);

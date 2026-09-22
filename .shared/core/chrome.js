@@ -153,7 +153,7 @@
 
     var help = site.discord
       ? '<div class="help-wrap">' +
-          '<button class="help-pill" type="button">' + mark('discord', { size: 16, fill: '#5865f2' }) +
+          '<button class="help-pill" type="button" aria-expanded="false">' + mark('discord', { size: 16, fill: '#5865f2' }) +
             '<span>Need help?</span></button>' +
           '<div class="help-pop">' +
             '<h4>Stuck on something?</h4>' +
@@ -234,13 +234,46 @@
     });
   }
 
-  // The help panel is hover-only. A pointer click would otherwise focus the
-  // pill and :focus-within would hold the panel open; refusing that focus keeps
-  // clicking inert while Tab still reaches it.
+  // The help panel opens on hover, and a click overrides that either way.
   function wireHelp(header) {
-    var pill = header.querySelector('.help-pill');
-    if (!pill || !HOVERS) return;
-    pill.addEventListener('mousedown', function (e) { e.preventDefault(); });
+    var wrap = header.querySelector('.help-wrap');
+    if (!wrap) return;
+    var pill = wrap.querySelector('.help-pill');
+    var pop = wrap.querySelector('.help-pop');
+    var expose = function (open) { pill.setAttribute('aria-expanded', open ? 'true' : 'false'); };
+
+    if (HOVERS) {
+      // Nothing latches: a click shuts the panel, and leaving resets it so the
+      // next hover opens again.
+      pill.addEventListener('click', function (e) {
+        e.stopPropagation();
+        expose(!wrap.classList.toggle('is-shut'));
+      });
+      wrap.addEventListener('pointerenter', function () {
+        if (!wrap.classList.contains('is-shut')) expose(true);
+      });
+      wrap.addEventListener('pointerleave', function () {
+        wrap.classList.remove('is-shut');
+        expose(false);
+      });
+    } else {
+      pill.addEventListener('click', function (e) {
+        e.stopPropagation();
+        expose(wrap.classList.toggle('is-open'));
+      });
+      pop.addEventListener('click', function (e) { e.stopPropagation(); });
+      document.addEventListener('click', function () {
+        wrap.classList.remove('is-open');
+        expose(false);
+      });
+    }
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key !== 'Escape') return;
+      wrap.classList.remove('is-open');
+      if (HOVERS) wrap.classList.add('is-shut');
+      expose(false);
+    });
   }
 
   // One bar for the whole nav; the leading edge moves faster, so it stretches between tabs.

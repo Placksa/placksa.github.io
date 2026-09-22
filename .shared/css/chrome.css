@@ -314,9 +314,10 @@
   height: 12px;
 }
 .help-wrap:hover .help-pop,
-.help-wrap:focus-within .help-pop { opacity: 1; transform: translateY(0); pointer-events: auto; }
-/* The pill is hover-only for a pointer. Clicking it does nothing at all. */
-.help-pill { cursor: default; }
+.help-wrap.is-open .help-pop { opacity: 1; transform: translateY(0); pointer-events: auto; }
+/* A click latches the panel shut while the pointer is still on the pill. */
+.help-wrap.is-shut:hover .help-pop { opacity: 0; transform: translateY(-6px); pointer-events: none; }
+.help-pill { cursor: pointer; }
 .help-pop h4 { margin: 0 0 7px; font-size: 0.95rem; color: var(--ink); }
 .help-pop p { margin: 0 0 13px; font-size: 0.84rem; line-height: 1.55; color: var(--lede); }
 .help-cta {
