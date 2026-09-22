@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>RAIO Virtual Receipt</title>
+  <link rel="stylesheet" href="style.css"/>
+  <link rel="icon" type="image/x-icon" href="assets/images/favicon.ico">
+  <script src="https://cdn.jsdelivr.net/npm/@streamerbot/client/dist/streamerbot-client.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/html-to-image@1.11.11/dist/html-to-image.min.js"></script>
+</head>
+<body>
+  <div class="notifications"></div>
+
+  <!-- Every receipt now fills the page, flush to the bottom edge. #receiptStage just holds whatever is currently printed. -->
+  <div id="receiptStage"></div>
+
+  <template id="standard-receipt">
+    <div class="receipt-paper">
+      <div class="divider stars"></div>
+      <div class="receipt-header">
+        <img class="platform-logo" data-bind="logo" alt="">
+        <span class="receipt-event" data-bind="event">EVENT</span>
+      </div>
+      <div class="divider stars"></div>
+      <div class="receipt-meta">
+        <div class="date" data-bind="date"></div>
+        <div class="time" data-bind="time"></div>
+      </div>
+      <div class="divider hyphen"></div>
+      <div class="user-section">
+        <div class="profile-wrapper">
+          <img class="profile-picture" src="assets/images/profile-picture.png" data-bind="avatar" alt="ProfilePicture">
+        </div>
+        <div class="user-info">
+          <div class="username" data-bind="username"></div>
+          <div class="tier" data-bind="tier" data-show-if="tier"></div>
+          <div class="amount" data-bind="amount" data-show-if="amount"></div>
+          <div class="sub-months" data-bind="subMonths" data-show-if="subMonths"></div>
+        </div>
+      </div>
+      <div class="divider hyphen"></div>
+      <div class="message-section" data-show-if="message">
+        <div class="message-label">Message:</div>
+        <div class="message-content" data-bind="message" data-html="true"></div>
+      </div>
+    </div>
+  </template>
+
+  <template id="gift-sub-receipt">
+    <div class="receipt-paper">
+      <div class="divider stars"></div>
+      <div class="receipt-header">
+        <img class="platform-logo" data-bind="logo" alt="">
+        <span class="receipt-event" data-bind="event">GIFT SUBSCRIPTION</span>
+      </div>
+      <div class="divider stars"></div>
+      <div class="receipt-meta">
+        <div class="date" data-bind="date"></div>
+        <div class="time" data-bind="time"></div>
+      </div>
+      <div class="divider hyphen"></div>
+      <div>From:</div>
+      <div class="user-section">
+        <div class="profile-wrapper gift">
+          <img class="profile-picture" src="assets/images/profile-picture.png" data-bind="fromAvatar" alt="ProfilePicture">
+        </div>
+        <div class="user-info gift">
+          <div class="username" data-bind="fromUsername"></div>
+          <div class="total-gifted" data-bind="totalGifted" data-show-if="totalGifted"></div>
+        </div>
+      </div>
+      <div>To:</div>
+      <div class="recipient-section">
+        <div class="profile-wrapper gift">
+          <img class="recipient-profile-picture" src="assets/images/profile-picture.png" data-bind="toAvatar" alt="ProfilePicture">
+        </div>
+        <div class="recipient-info gift">
+          <div class="recipient-username" data-bind="toUsername"></div>
+          <div class="tier" data-bind="tier" data-show-if="tier"></div>
+        </div>
+      </div>
+      <div class="divider hyphen"></div>
+    </div>
+  </template>
+
+  <template id="multi-gift-receipt">
+    <div class="receipt-paper">
+      <div class="divider stars"></div>
+      <div class="receipt-header">
+        <img class="platform-logo" data-bind="logo" alt="">
+        <span class="receipt-event" data-bind="event">GIFTED SUBS</span>
+      </div>
+      <div class="divider stars"></div>
+      <div class="receipt-meta">
+        <div class="date" data-bind="date"></div>
+        <div class="time" data-bind="time"></div>
+      </div>
+      <div class="divider hyphen"></div>
+      <div>From:</div>
+      <div class="user-section">
+        <div class="profile-wrapper">
+          <img class="profile-picture" src="assets/images/profile-picture.png" data-bind="fromAvatar" alt="ProfilePicture">
+        </div>
+        <div class="user-info">
+          <div class="username" data-bind="fromUsername"></div>
+          <div class="tier" data-bind="tier" data-show-if="tier"></div>
+          <div class="total-gifted" data-bind="totalGifted" data-show-if="totalGifted"></div>
+        </div>
+      </div>
+      <div>To:</div>
+      <div class="recipients" data-bind="recipients"></div>
+      <div class="divider hyphen"></div>
+    </div>
+  </template>
+
+  <template id="donation-receipt">
+    <div class="receipt-paper">
+      <div class="divider stars"></div>
+      <div class="receipt-header">
+        <img class="platform-logo" data-bind="logo" alt="">
+        <span class="receipt-event" data-bind="event">DONATION</span>
+      </div>
+      <div class="divider stars"></div>
+      <div class="receipt-meta">
+        <div class="date" data-bind="date"></div>
+        <div class="time" data-bind="time"></div>
+      </div>
+      <div class="divider hyphen"></div>
+      <div class="user-section">
+        <div class="user-info donation">
+          <div class="username" data-bind="username"></div>
+          <div class="donation-amount" data-bind="amount"></div>
+        </div>
+      </div>
+      <div class="divider hyphen"></div>
+      <div class="message-section" data-show-if="message">
+        <div class="message-label">Message:</div>
+        <div class="message-content" data-bind="message" data-html="true"></div>
+      </div>
+    </div>
+  </template>
+
+  <template id="gifts-receipt">
+    <div class="receipt-paper">
+      <div class="divider stars"></div>
+      <div class="receipt-header">
+        <img class="platform-logo" data-bind="logo" alt="">
+        <span class="receipt-event" data-bind="event"></span>
+      </div>
+      <div class="divider stars"></div>
+      <div class="receipt-meta">
+        <div class="date" data-bind="date"></div>
+        <div class="time" data-bind="time"></div>
+      </div>
+      <div class="divider hyphen"></div>
+      <div class="card-wrapper">
+        <div class="profile-wrapper gifts-receipt">
+          <img class="profile-picture" src="assets/images/profile-picture.png" data-bind="avatar" alt="ProfilePicture">
+        </div>
+        <div class="user-info gifts-receipt">
+          <div class="username" data-bind="username"></div>
+          <div class="amount" data-bind="amount"></div>
+        </div>
+        <div class="gift-info">
+          <span class="gift-count" data-bind="giftCount"></span>
+          <img class="gift-picture-url" data-bind="giftImage" alt="Gift Image">
+        </div>
+      </div>
+      <div class="divider hyphen"></div>
+    </div>
+  </template>
+
+  <script src="script.js"></script>
+</body>
+</html>

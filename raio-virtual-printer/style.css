@@ -1,0 +1,441 @@
+@font-face {
+    font-family: 'Hypermarket Cond';
+    src: url('assets/fonts/Hypermarket-Cond.eot');
+    src: url('assets/fonts/Hypermarket-Cond.eot?#iefix') format('embedded-opentype'),
+         url('assets/fonts/Hypermarket-Cond.woff2') format('woff2'),
+         url('assets/fonts/Hypermarket-Cond.woff') format('woff'),
+         url('assets/fonts/Hypermarket-Cond.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Hypermarket Cond';
+    src: url('assets/fonts/Hypermarket-CondLight.eot');
+    src: url('assets/fonts/Hypermarket-CondLight.eot?#iefix') format('embedded-opentype'),
+         url('assets/fonts/Hypermarket-CondLight.woff2') format('woff2'),
+         url('assets/fonts/Hypermarket-CondLight.woff') format('woff'),
+         url('assets/fonts/Hypermarket-CondLight.ttf') format('truetype');
+    font-weight: 300;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Hypermarket Cond';
+    src: url('assets/fonts/Hypermarket-CondBold.eot');
+    src: url('assets/fonts/Hypermarket-CondBold.eot?#iefix') format('embedded-opentype'),
+         url('assets/fonts/Hypermarket-CondBold.woff2') format('woff2'),
+         url('assets/fonts/Hypermarket-CondBold.woff') format('woff'),
+         url('assets/fonts/Hypermarket-CondBold.ttf') format('truetype');
+    font-weight: bold;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Hypermarket';
+    src: url('assets/fonts/Hypermarket-Bold.eot');
+    src: url('assets/fonts/Hypermarket-Bold.eot?#iefix') format('embedded-opentype'),
+         url('assets/fonts/Hypermarket-Bold.woff2') format('woff2'),
+         url('assets/fonts/Hypermarket-Bold.woff') format('woff'),
+         url('assets/fonts/Hypermarket-Bold.ttf') format('truetype');
+    font-weight: bold;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Hypermarket Exp';
+    src: url('assets/fonts/Hypermarket-Exp.eot');
+    src: url('assets/fonts/Hypermarket-Exp.eot?#iefix') format('embedded-opentype'),
+         url('assets/fonts/Hypermarket-Exp.woff2') format('woff2'),
+         url('assets/fonts/Hypermarket-Exp.woff') format('woff'),
+         url('assets/fonts/Hypermarket-Exp.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Hypermarket';
+    src: url('assets/fonts/Hypermarket-Regular.eot');
+    src: url('assets/fonts/Hypermarket-Regular.eot?#iefix') format('embedded-opentype'),
+         url('assets/fonts/Hypermarket-Regular.woff2') format('woff2'),
+         url('assets/fonts/Hypermarket-Regular.woff') format('woff'),
+         url('assets/fonts/Hypermarket-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Hypermarket Exp';
+    src: url('assets/fonts/Hypermarket-ExpLight.eot');
+    src: url('assets/fonts/Hypermarket-ExpLight.eot?#iefix') format('embedded-opentype'),
+         url('assets/fonts/Hypermarket-ExpLight.woff2') format('woff2'),
+         url('assets/fonts/Hypermarket-ExpLight.woff') format('woff'),
+         url('assets/fonts/Hypermarket-ExpLight.ttf') format('truetype');
+    font-weight: 300;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Hypermarket';
+    src: url('assets/fonts/Hypermarket-Light.eot');
+    src: url('assets/fonts/Hypermarket-Light.eot?#iefix') format('embedded-opentype'),
+         url('assets/fonts/Hypermarket-Light.woff2') format('woff2'),
+         url('assets/fonts/Hypermarket-Light.woff') format('woff'),
+         url('assets/fonts/Hypermarket-Light.ttf') format('truetype');
+    font-weight: 300;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Hypermarket Exp';
+    src: url('assets/fonts/Hypermarket-ExpBold.eot');
+    src: url('assets/fonts/Hypermarket-ExpBold.eot?#iefix') format('embedded-opentype'),
+         url('assets/fonts/Hypermarket-ExpBold.woff2') format('woff2'),
+         url('assets/fonts/Hypermarket-ExpBold.woff') format('woff'),
+         url('assets/fonts/Hypermarket-ExpBold.ttf') format('truetype');
+    font-weight: bold;
+    font-style: normal;
+}
+
+/*
+  ===========================================================
+  ONE FONT-SIZE TELLER
+  ===========================================================
+  --base-font-size is the single controlling value. It's set once here
+  (as a responsive vmin unit, so it scales automatically with whatever
+  size OBS renders the browser source at) and can be overridden per-load
+  via ?fontSize=... (see script.js). Every other size in this file below
+  is written in em, relative to .receipt-paper's font-size, so they all
+  scale together when this one variable changes.
+*/
+:root {
+  --base-font-size: 26px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  background: transparent; /* keep it transparent for the OBS browser source */
+}
+
+#receiptStage {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: flex-end;   /* bottom-aligned */
+  justify-content: center;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+.receipt-paper {
+    position: relative;
+    background:
+        /* feed lines */
+        repeating-linear-gradient(
+        to bottom,
+        rgba(0, 0, 0, 0.02) 0px,
+        rgba(0, 0, 0, 0.02) 1px,
+        transparent 6px
+        ),
+        /* subtle paper texture */
+        radial-gradient(circle at 1px 1px, rgba(0, 0, 0, 0.015) 1px, transparent 0);
+    background-size: 100% 100%, 3px 3px;
+    background-color: #faf9f6; /* off-white thermal paper color */
+    font-family: 'Hypermarket Cond', sans-serif;
+    font-weight: bold;
+    font-size: var(--base-font-size); /* <-- the one teller */
+    line-height: 1.3;
+    margin: 0;
+    width: 100%;         /* flush to the left/right page edges */
+    max-height: 100%;    /* flush to the bottom; grows up, capped at the page height */
+    overflow-y: auto;
+    border: 0;
+    padding: 1em;        /* this is breathing room for the text INSIDE the paper, not page margin */
+
+    /* optional soft shadow for realism */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Force scrollbars invisible everywhere they could show up on this overlay,
+   even though overflow-y:auto is only there as a safety net for unusually
+   long content -- an OBS browser source should never show a visible scrollbar. */
+.receipt-paper {
+  scrollbar-width: none;    /* Firefox */
+  -ms-overflow-style: none; /* old Edge/IE */
+}
+.receipt-paper::-webkit-scrollbar {
+  display: none;            /* Chromium / OBS's CEF browser source */
+  width: 0;
+  height: 0;
+}
+
+/*
+  Print-in animation: paper feeding up from the bottom, like a thermal
+  printer's motor-driven auto-cutter feed -- a smooth, continuous glide,
+  not a stepped/juddery one. ease-out gives it a slight deceleration as it
+  settles into place, similar to a feed motor easing off. Applies only when
+  a receipt is rendered -- clearing/swapping still snaps out instantly.
+*/
+@keyframes printFeed {
+  0%   { transform: translateY(100%); }
+  100% { transform: translateY(0%); }
+}
+
+.receipt-paper.printing {
+  animation: printFeed 1s ease-out forwards;
+}
+
+.receipt-header {
+    font-family: 'Hypermarket Exp', sans-serif;
+    display: flex;
+    align-items: center;     /* vertically center logo + text */
+    justify-content: center; /* horizontally center everything */
+    gap: 0.5em;               /* space between logo and text */
+    text-align: center;
+}
+
+.platform-logo {
+    height: 1.2em;
+    vertical-align: middle;
+}
+
+.logo .st1 {
+  fill: black;   /* replaces purple */
+}
+.logo .st0 {
+  fill: white;   /* replaces white */
+}
+
+.divider {
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: clip;
+    display: block;
+}
+
+.divider.hyphen {
+  line-height: 65%;
+}
+
+.profile-wrapper {
+  width: 8.9em;
+  aspect-ratio: 1/1;
+  border-radius: 50%;
+  overflow: hidden;
+  margin: 0.7em auto;
+}
+
+.profile-wrapper.gift {
+    border-radius: 0;
+    width: 5.4em;
+    margin-left: 0;
+}
+
+.profile-picture,
+.recipient-profile-picture {
+  width: 100%;
+  height: 100%;
+  display: block;
+  /* no padding, no object-fit needed */
+}
+
+.username {
+  font-size: 1.3em;
+}
+
+.recipients {
+  white-space: pre-line; /* This makes \n act like <br> */
+  font-size: 0.8em;
+  text-align: center;
+}
+
+.user-info {
+    text-align: center;
+}
+
+.user-info.gift,
+.user-info.donation {
+    text-align: left;
+}
+
+.user-info.donation {
+    margin: 0.5em 0;
+}
+
+.user-info.donation .username {
+    font-size: 1.35em;
+}
+
+.sub-months, .total-gifted, .tier {
+    font-size: 0.9em;
+}
+
+.message-content {
+    font-size: 0.9em;
+    overflow-wrap: break-word;
+}
+
+.emote {
+  height: 1em;
+  margin: 0.07em;
+  transform: translate(0, 0.18em);
+}
+
+/* Container for the 3 columns */
+.card-wrapper {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  gap: 0.85em;
+  padding: 0.55em 0;
+  overflow: hidden; /* Safety clip */
+}
+
+/* LEFT COLUMN: Avatar */
+.profile-wrapper.gifts-receipt {
+  flex: 0 0 auto;      /* Don't grow, don't shrink */
+  width: 3.6em;
+  height: 3.6em;
+  margin: 0;           /* Override any 'auto' centering */
+}
+
+/* MIDDLE COLUMN: User Info */
+.user-info.gifts-receipt {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: left;
+
+  /* CRITICAL: Allows the flex item to shrink below its content width */
+  min-width: 0;
+}
+
+/* TEXT ELLIPSIS LOGIC */
+.user-info.gifts-receipt .username,
+.user-info.gifts-receipt .amount {
+  white-space: nowrap;      /* Keep text on one line */
+  overflow: hidden;         /* Hide the overflow */
+  text-overflow: ellipsis;  /* Add the "..." */
+  width: 100%;              /* Occupy full width of the parent flex-box */
+}
+
+.gift-info .gift-count {
+    font-size: 1.5em;
+}
+
+.gift-picture-url {
+    width: 3em;
+    height: auto;           /* Keep ratio */
+    display: block;
+}
+
+.gift-info {
+  flex: 0 0 auto;           /* Fixed size, won't be squished */
+  height: 3.6em;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.35em;
+}
+
+/* Status notification toast (connection status only) */
+.notifications {
+  font-family: sans-serif;
+  position: fixed;
+  bottom: 2vmin;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  z-index: 9999;
+}
+
+.toast {
+  position: relative;
+  padding: 10px;
+  color: #fff;
+  max-width: 500px;
+  display: grid;
+  grid-template-columns: 1fr;
+  border-radius: 5px;
+  --color: #0abf30;
+  background: #202022;
+  animation: show 0.3s ease 1 forwards;
+  font-size: 14px;
+}
+
+.toast .content {
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.toast .title {
+  font-size: 1.1em;
+  font-weight: bold;
+}
+
+.toast span {
+  color: #fff;
+  opacity: 0.6;
+}
+
+@keyframes show {
+  0% { transform: translateY(100%); }
+  40% { transform: translateY(-5%); }
+  80% { transform: translateY(0%); }
+  100% { transform: translateY(-10%); }
+}
+
+.toast::before {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  background-color: var(--color);
+  width: 100%;
+  height: 3px;
+  content: '';
+  box-shadow: 0 0 10px var(--color);
+  animation: timeOut 3s linear 1 forwards;
+}
+
+@keyframes timeOut {
+  100% { width: 0; }
+}
+
+.toast.error { --color: #f24d4c; }
+.toast.warning { --color: #e9bd0c; }
+.toast.info { --color: #3498db; }
+
+/* Dev/debug test panel (only shown with ?debug=1) */
+#debugPanel {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  font-family: sans-serif;
+}
+
+#debugPanel button {
+  padding: 8px 12px;
+  cursor: pointer;
+}
