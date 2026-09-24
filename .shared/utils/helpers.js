@@ -29,16 +29,6 @@ const Utils = {
     return `<img src="${Utils.escapeHtml(url)}" alt="${safeLabel}" title="${safeLabel}" class="emote">`;
   },
 
-  // Streamer.bot hands YouTube and Twitch emotes over as a flat list of
-  // { startIndex, endIndex, imageUrl, name } spans into the raw message. Walk
-  // the message once, emitting the text between spans and an image for each.
-  //
-  // Shared rather than filed under a platform because the shape is
-  // Streamer.bot's, not the platform's. Twitch has richer parts of its own —
-  // see Twitch.buildMessageHtml — so in practice YouTube is what renders here.
-  //
-  // Every branch escapes, including the no-emote one: this html goes to
-  // innerHTML, so a chatter typing markup must never reach it intact.
   buildEmoteMessageHtml(originalMessage, emotes) {
     const text = String(originalMessage ?? '');
     if (!emotes || emotes.length === 0) return Utils.escapeHtml(text);
@@ -61,7 +51,48 @@ const Utils = {
     });
 
     return html + Utils.escapeHtml(text.slice(cursor));
-  }
+  },
+
+  buildEmoteMessageFromCSharp(originalMessage, emotes, cheerEmotes) {
+    const text = String(originalMessage ?? '');
+
+    const spans = [...(emotes || []), ...(cheerEmotes || [])]
+      .filter(Boolean)
+      .sort((a, b) => a.StartIndex - b.StartIndex);
+
+    if (!spans.length) return Utils.escapeHtml(text);
+
+    let html = '';
+    let cursor = 0;
+
+    spans.forEach((span) => {
+      if (span.StartIndex < cursor) return; // same overlap guard as buildEmoteMessageHtml
+
+      html += Utils.escapeHtml(text.slice(cursor, span.StartIndex));
+
+      // Twemoji spans are plain unicode dressed as an emote -- Name IS the
+      // character itself here, and an image would only make it bigger.
+      if (span.Type === 'Twemoji') {
+        html += Utils.escapeHtml(span.Name);
+      } else {
+        const sizePair = Twitch._emoteSizes[span.Type];
+        const url = sizePair ? span.ImageUrl.replace(sizePair[0], sizePair[1]) : span.ImageUrl;
+        html += Utils._emoteImg(url, span.Name);
+      }
+
+      // Only CheerEmote spans carry Bits.
+      if (span.Bits !== undefined && span.Bits !== null) {
+        const safeColor = /^#[0-9a-f]{3,8}$/i.test(span.Color || '') ? span.Color : null;
+        const style = safeColor ? ` style="color:${safeColor}"` : '';
+        html += `<span class="bits"${style}>${Utils.escapeHtml(span.Bits)}</span>`;
+      }
+
+      cursor = span.EndIndex + 1;
+    });
+
+    return html + Utils.escapeHtml(text.slice(cursor));
+  },
+  
 };
 
 /* ================================================================ Twitch ====
