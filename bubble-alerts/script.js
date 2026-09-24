@@ -410,7 +410,7 @@ async function TwitchEvent(event, data) {
     case "Sub": {
       if (!twitchSub) return;
       username = data.user.name;
-      const tier = data.subTier.charAt(0) ?? data.sub_tier.charAt(0);
+      const tier = data.subTier?.charAt(0) ?? data.sub_tier?.charAt(0);
       const isPrime = data.isPrime ?? data.is_prime;
 
       if (!isPrime) {
@@ -418,7 +418,6 @@ async function TwitchEvent(event, data) {
       } else {
         message = "Subscribed with <strong>Prime</strong>!";
       }
-      
       break;
     }
 
