@@ -108,8 +108,7 @@ function handleCommand(payload) {
       scrollReceipt(payload);
       break;
     default:
-      console.warn('handleCommand: unknown action', payload.action);
-      createToast('warning', widgetTitle, `Unknown action: ${payload.action}`);
+      break;
   }
 }
 
@@ -126,6 +125,12 @@ function renderReceipt({ id, template, content = {} }) {
     console.error(`renderReceipt: no template found with id "${template}"`);
     createToast('error', widgetTitle, `Unknown template: ${template}`);
     return;
+  }
+
+  if (content.message && 'rawInput' in content.message) {
+    content.message = {
+      html: Utils.buildEmoteMessageFromCSharp(content.message.rawInput, content.message.emotes, content.message.cheerEmotes)
+    };
   }
 
   const now = new Date();
@@ -305,13 +310,11 @@ function sendReceiptToDiscord({ webhookUrl, username, avatarUrl } = {}) {
 
   if (!url) {
     console.error('sendReceiptToDiscord: no webhook URL configured (pass "webhookUrl" or set ?webhookUrl= on the page)');
-    createToast('error', widgetTitle, 'No Discord webhook URL configured');
     return;
   }
 
   if (!currentReceipt) {
     console.error('sendReceiptToDiscord: no receipt currently on screen to send');
-    createToast('error', widgetTitle, 'No receipt on screen to send');
     return;
   }
 
@@ -339,11 +342,10 @@ function sendReceiptToDiscord({ webhookUrl, username, avatarUrl } = {}) {
       return fetch(url, { method: 'POST', body: formData });
     })
     .then(() => {
-      createToast('success', widgetTitle, 'Sent receipt to Discord');
+      console.debug('Sent receipt to Discord successfully!')
     })
     .catch((err) => {
       console.error('sendReceiptToDiscord: capture/send failed', err);
-      createToast('error', widgetTitle, 'Failed to send receipt to Discord');
     });
 }
 
