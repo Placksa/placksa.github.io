@@ -457,7 +457,7 @@ async function TwitchEvent(event, data) {
       username = data.user.name;
       const gifts = data.recipients.length;
       const totalGifts = data.cumulativeTotal ?? data.cumulative_total;
-      const tier = data.subTier.charAt(0) ?? data.sub_tier.charAt(0);
+      const tier = data.subTier?.charAt(0) ?? data.sub_tier?.charAt(0);
 
       message = `Gifted <strong>${gifts} Tier ${tier}</strong> subs! (${totalGifts} total)`;
       break;
