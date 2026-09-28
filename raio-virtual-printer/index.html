@@ -6,7 +6,7 @@
   <link rel="stylesheet" href="style.css"/>
   <link rel="icon" type="image/x-icon" href="assets/images/favicon.ico">
   <script src="https://cdn.jsdelivr.net/npm/@streamerbot/client/dist/streamerbot-client.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script> -->
   <script src="https://cdn.jsdelivr.net/npm/html-to-image@1.11.11/dist/html-to-image.min.js"></script>
   <script src="../.shared/utils/helpers.js"></script>
 </head>
@@ -43,7 +43,7 @@
       <div class="divider hyphen"></div>
       <div class="message-section" data-show-if="message">
         <div class="message-label">Message:</div>
-        <div class="message-content" data-bind="message" data-html="true"></div>
+        <div class="message-content" data-bind="message"></div>
       </div>
     </div>
   </template>
@@ -137,7 +137,7 @@
       <div class="divider hyphen"></div>
       <div class="message-section" data-show-if="message">
         <div class="message-label">Message:</div>
-        <div class="message-content" data-bind="message" data-html="true"></div>
+        <div class="message-content" data-bind="message"></div>
       </div>
     </div>
   </template>

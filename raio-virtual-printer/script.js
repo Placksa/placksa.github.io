@@ -77,6 +77,7 @@ sbClient.on('General.Custom', ({ data }) => {
     createToast('error', widgetTitle, 'Received malformed JSON payload');
     return;
   }
+  console.debug(payload);
   handleCommand(payload);
 });
 
@@ -127,12 +128,6 @@ function renderReceipt({ id, template, content = {} }) {
     return;
   }
 
-  if (content.message && 'rawInput' in content.message) {
-    content.message = {
-      html: Utils.buildEmoteMessageFromCSharp(content.message.rawInput, content.message.emotes, content.message.cheerEmotes)
-    };
-  }
-
   const now = new Date();
   const mergedContent = {
     date: `Date: ${dateFormat.format(now)}`,
@@ -143,7 +138,24 @@ function renderReceipt({ id, template, content = {} }) {
   const instance = tpl.content.cloneNode(true);
   const receipt = instance.querySelector('.receipt-paper');
 
+  // bindFields() below is a fully generic engine: it only ever writes
+  // textContent or an <img> src, for ANY shape it's handed -- it has no
+  // branch that can produce raw HTML, so there is no "content" field a
+  // caller could send that would get interpreted as markup.
   bindFields(receipt, mergedContent);
+
+  // Checks if the message content has emotes/cheer emotes
+  // If there is, then uses innerHTML instead of textContent but it makes sure that it's
+  // sanitized via the UtilsUtils.buildEmoteMessageFromCSharp function
+  if (content.message && typeof content.message === 'object' && 'rawInput' in content.message) {
+    const safeHtml = Utils.buildEmoteMessageFromCSharp(
+      content.message.rawInput,
+      content.message.emotes,
+      content.message.cheerEmotes
+    );
+    const messageEl = receipt.querySelector('[data-bind="message"]');
+    if (messageEl) messageEl.innerHTML = safeHtml;
+  }
 
   // Cut whatever's on screen instantly, THEN append the new one and play the
   // print-in feed animation. Clearing/swapping itself is still instant --
@@ -171,17 +183,23 @@ function retireCurrent() {
 }
 
 // Walks every [data-show-if] / [data-bind] element under `root` and fills it
-// in from `data`. This is the entirety of the "template engine".
+// in from `data`. This is the entirety of the "template engine" -- and,
+// deliberately, it is INCAPABLE of writing innerHTML for any shape it is
+// given. The only two things it ever does to an element are set textContent
+// or set an <img>'s src. (The one field that legitimately needs raw HTML --
+// an emote message -- is handled separately in renderReceipt(), never here.)
 function bindFields(root, data) {
   root.querySelectorAll('[data-show-if]').forEach((el) => {
     let value = getPath(data, el.dataset.showIf);
 
-    // Unwrap { html: ... } / { src: ... } objects (the same shapes data-bind
-    // accepts) so a value like { html: "" } is judged on its actual content,
-    // not on the fact that it's a non-null object.
+    // Unwrap { text: ... } / { src: ... } / { rawInput: ... } objects (the
+    // same shapes data-bind and the emote-message path accept) so a value
+    // like { text: "" } is judged on its actual content, not on the fact
+    // that it's a non-null object.
     if (value && typeof value === 'object' && !Array.isArray(value)) {
-      if ('html' in value) value = value.html;
+      if ('text' in value) value = value.text;
       else if ('src' in value) value = value.src;
+      else if ('rawInput' in value) value = value.rawInput;
     }
 
     const isEmpty =
@@ -200,17 +218,24 @@ function bindFields(root, data) {
       const sep = el.dataset.join !== undefined ? el.dataset.join.replace(/\\n/g, '\n') : '\n';
       value = value.join(sep);
     } else if (typeof value === 'object') {
-      if ('html' in value) {
-        el.innerHTML = value.html;
+      if ('text' in value) {
+        el.textContent = value.text;
         return;
       }
-      if ('src' in value) value = value.src;
+      if ('src' in value) {
+        value = value.src;
+      } else {
+        // Unrecognized object shape -- e.g. the raw { rawInput, emotes,
+        // cheerEmotes } form used for emote messages. This generic engine
+        // doesn't know how to turn that into text or an image src, and it
+        // never guesses; renderReceipt() fills this element in separately,
+        // immediately after this function returns. Leave it untouched.
+        return;
+      }
     }
 
     if (el.tagName === 'IMG') {
       el.src = value;
-    } else if (el.dataset.html === 'true') {
-      el.innerHTML = value;
     } else {
       el.textContent = value;
     }
@@ -319,7 +344,7 @@ function sendReceiptToDiscord({ webhookUrl, username, avatarUrl } = {}) {
   }
 
   const node = currentReceipt.el;
-  const scale = 3; // ensures high-resolution output regardless of the on-screen size
+  const scale = 2; // ensures high-resolution output regardless of the on-screen size
 
   htmlToImage.toBlob(node, {
     cacheBust: true,
@@ -352,15 +377,30 @@ function sendReceiptToDiscord({ webhookUrl, username, avatarUrl } = {}) {
 // ------------------------
 // Connection status toasts
 // ------------------------
+// Builds the toast via textContent, not innerHTML -- `text` here can carry
+// attacker-influenced data (e.g. renderReceipt's "Unknown template: X" message
+// echoes back whatever template name a payload sent), so this needs the same
+// no-HTML-sink discipline as bindFields, not a template-literal shortcut.
 function createToast(type, title, text) {
   const newToast = document.createElement('div');
-  newToast.innerHTML = `
-    <div class="toast ${type}">
-      <div class="content">
-        <div class="title">${title}</div>
-        <span>${text}</span>
-      </div>
-    </div>`;
+
+  const toast = document.createElement('div');
+  toast.className = `toast ${type}`;
+
+  const content = document.createElement('div');
+  content.className = 'content';
+
+  const titleEl = document.createElement('div');
+  titleEl.className = 'title';
+  titleEl.textContent = title;
+
+  const textEl = document.createElement('span');
+  textEl.textContent = text;
+
+  content.append(titleEl, textEl);
+  toast.appendChild(content);
+  newToast.appendChild(toast);
+
   notifications.appendChild(newToast);
   setTimeout(() => newToast.remove(), 3000);
 }
@@ -390,7 +430,7 @@ if (debugMode) {
       avatar: 'assets/images/profile-picture.png',
       username: 'rexbordz',
       tier: 'Tier 1',
-      message: { html: "Let's gooo!" }
+      message: "Let's gooo!"
     }
   });
 
@@ -442,7 +482,7 @@ if (debugMode) {
       logo: 'assets/images/kofi-logo.png',
       username: 'rexbordz',
       amount: '$67.00',
-      message: { html: 'Let\u2019s gooo!' }
+      message: 'Let\u2019s gooo!'
     }
   });
 
