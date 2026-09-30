@@ -101,8 +101,8 @@ const BUILD_MODE_ALERT = {
 // ==================
 
 const SOUND_ALERT = {
-  src: "assets/audio/eureka.mp3",
-  volume: 0.3, // default volume (0.0 - 1.0)
+  src: "assets/audio/Tuturu.mp3",
+  volume: 0.1, // default volume (0.0 - 1.0)
 };
 
 // Preload sound
@@ -404,7 +404,7 @@ async function TwitchEvent(event, data) {
     case "Follow":
       if (!twitchFollow) return;
       username = data.targetUser.name;
-      message = "Just followed!";
+      message = "спасибо за подписку!";
       break;
 
     case "Sub": {
@@ -502,7 +502,7 @@ function YouTubeEvent(event, data) {
       if (!youtubeSub) return;
       username = data.name ?? data.username;
       avatarUrl = data.profileImageUrl ?? data.avatar;
-      message = "Just subscribed!";
+      message = "спасибо за подписку!";
       break;
 
     case "NewSponsor":
@@ -551,7 +551,7 @@ async function KickEvent(event, data) {
     case "Follow":
       if (!kickFollow) return;
       username = data.user.name;
-      message = "Just followed!";
+      message = "спасибо за подписку!";
       break;
 
     case "Subscription":
@@ -624,7 +624,7 @@ function TiktokEvent(event, data) {
     case "TikTokFollow":
     case "follow":
       if (!tiktokFollow) return;
-      message = "Just followed!";
+      message = "спасибо за подписку!";
       break;
 
     case "TikTokGift":
