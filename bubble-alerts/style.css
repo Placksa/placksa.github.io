@@ -140,7 +140,7 @@ body {
 /* ============================= */
 
 .platform-badge {
-  width: 1.2em;
+  width: 1.6em;
   height: auto;
 
   position: absolute;
@@ -320,12 +320,13 @@ body.dark #alert-container .bubble-text {
 
 .bubble-username {
   font-weight: 700;
-  font-size: 1.08em;
+  font-size: 1.3em;
   line-height: 1.25;
   white-space: nowrap;
   overflow: hidden;
   /* text-overflow: ellipsis; */
-  margin-bottom: 0.32em;
+  margin-bottom: 0.2em;
+  text-align: center;
 }
 
 .bubble-message {
@@ -381,7 +382,7 @@ body.dark #alert-container .bubble-text {
 }
 
 .message-bubble.platform-tiktok {
-  --bubble-start: #d5475f;
+  --bubble-start: #6b6c6e;
 }
 
 /* ============================= */
