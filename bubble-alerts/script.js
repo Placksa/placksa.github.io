@@ -102,7 +102,7 @@ const BUILD_MODE_ALERT = {
 
 const SOUND_ALERT = {
   src: "assets/audio/Tuturu.mp3",
-  volume: 0.02, // default volume (0.0 - 1.0)
+  volume: 0.01, // default volume (0.0 - 1.0)
 };
 
 // Preload sound
